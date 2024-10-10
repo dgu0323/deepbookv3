@@ -4,7 +4,7 @@
 /// History module tracks the volume data for the current epoch and past epochs.
 /// It also tracks past trade params. Past maker fees are used to calculate fills for
 /// old orders. The historic median is used to calculate rebates and burns.
-module deepbook::history;
+module deepbook::history{
 
 use deepbook::balances::{Self, Balances};
 use deepbook::constants;
@@ -221,4 +221,5 @@ public fun set_current_volumes(
     volumes.total_volume = total_volume;
     volumes.total_staked_volume = total_staked_volume;
     volumes.total_fees_collected = total_fees_collected;
+}
 }

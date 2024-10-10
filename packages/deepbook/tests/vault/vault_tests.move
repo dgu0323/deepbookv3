@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 #[test_only]
-module deepbook::vault_tests;
+module deepbook::vault_tests{
 
 use deepbook::balance_manager::{Self, BalanceManager};
 use deepbook::balance_manager_tests::{
@@ -369,4 +369,5 @@ fun owed_equals_settled_e() {
     destroy(balance_manager_bob);
     destroy(balance_manager_alice);
     test.end();
+}
 }

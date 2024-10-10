@@ -15,8 +15,7 @@
 ///
 /// Note: The index type is `u128`, but the length is stored as `u64`
 /// because the expectation is that indices are sparsely distributed.
-module deepbook::big_vector;
-
+module deepbook::big_vector {
 use sui::dynamic_field as df;
 
 use fun sui::object::new as TxContext.new;
@@ -1350,4 +1349,5 @@ fun test_bisect() {
     assert!(slice.bisect_right(9) == 5, 0);
     assert!(slice.bisect_right(10) == 5, 0);
     assert!(slice.bisect_right(11) == 5, 0);
+}
 }

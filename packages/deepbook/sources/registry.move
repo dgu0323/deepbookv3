@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 /// Registry holds all created pools.
-module deepbook::registry;
+module deepbook::registry{
 
 use deepbook::constants;
 use std::type_name::{Self, TypeName};
@@ -210,4 +210,5 @@ public fun test_registry(ctx: &mut TxContext): ID {
 #[test_only]
 public fun get_admin_cap_for_testing(ctx: &mut TxContext): DeepbookAdminCap {
     DeepbookAdminCap { id: object::new(ctx) }
+}
 }

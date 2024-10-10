@@ -3,7 +3,7 @@
 
 /// DEEP price module. This module maintains the conversion rate
 /// between DEEP and the base and quote assets.
-module deepbook::deep_price;
+module deepbook::deep_price{
 
 use deepbook::math;
 use sui::event;
@@ -220,4 +220,5 @@ fun last_insert_timestamp(self: &DeepPrice, is_base_conversion: bool): u64 {
     } else {
         0
     }
+}
 }

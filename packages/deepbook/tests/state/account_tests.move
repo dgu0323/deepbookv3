@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 #[test_only]
-module deepbook::account_tests;
+module deepbook::account_tests{
 
 use deepbook::account;
 use deepbook::balances;
@@ -334,4 +334,5 @@ fun set_voted_proposal_ok() {
     assert!(account.voted_proposal().is_none(), 0);
 
     test.end();
+}
 }

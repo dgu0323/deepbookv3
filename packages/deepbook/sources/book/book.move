@@ -3,7 +3,7 @@
 
 /// The book module contains the `Book` struct which represents the order book.
 /// All order book operations are defined in this module.
-module deepbook::book;
+module deepbook::book{
 
 use deepbook::big_vector::{Self, BigVector, slice_borrow, slice_borrow_mut};
 use deepbook::constants;
@@ -419,4 +419,5 @@ fun inject_limit_order(self: &mut Book, order_info: &OrderInfo) {
     } else {
         self.asks.insert(order_info.order_id(), order);
     };
+}
 }

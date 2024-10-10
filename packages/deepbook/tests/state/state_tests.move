@@ -1,4 +1,4 @@
-module deepbook::state_tests;
+module deepbook::state_tests{
 
 use deepbook::balances;
 use deepbook::constants;
@@ -1004,4 +1004,5 @@ fun process_proposal_vote_ok() {
 
     destroy(state);
     test.end();
+}
 }

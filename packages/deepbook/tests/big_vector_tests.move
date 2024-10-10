@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 #[test_only]
-module deepbook::big_vector_tests;
+module deepbook::big_vector_tests{
 
 use deepbook::big_vector::{
     Self as bv,
@@ -681,4 +681,5 @@ fun next_key<E: store>(self: &BigVector<E>, key: u128): u128 {
     let (sr, ix) = self.slice_following(key);
     let slice = self.borrow_slice(sr);
     slice.key(ix)
+}
 }

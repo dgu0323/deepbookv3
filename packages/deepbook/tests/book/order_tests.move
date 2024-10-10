@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 #[test_only]
-module deepbook::order_tests;
+module deepbook::order_tests{
 
 use deepbook::balances;
 use deepbook::constants;
@@ -484,4 +484,5 @@ public fun create_order(
         constants::live(),
         expire_timestamp,
     )
+}
 }

@@ -4,7 +4,7 @@
 /// Governance module handles the governance of the `Pool` that it's attached to.
 /// Users with non zero stake can create proposals and vote on them. Winning
 /// proposals are used to set the trade parameters for the next epoch.
-module deepbook::governance;
+module deepbook::governance{
 
 use deepbook::constants;
 use deepbook::math;
@@ -328,4 +328,5 @@ public fun votes(proposal: &Proposal): u64 {
 #[test_only]
 public fun params(proposal: &Proposal): (u64, u64, u64) {
     (proposal.taker_fee, proposal.maker_fee, proposal.stake_required)
+}
 }

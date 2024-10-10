@@ -6,7 +6,7 @@
 /// owner directly, or by any `TradeCap` owner. The owner can generate a `TradeProof` without the risk of
 /// equivocation. The `TradeCap` owner, due to it being an owned object, risks equivocation when generating
 /// a `TradeProof`. Generally, a high frequency trading engine will trade as the default owner.
-module deepbook::balance_manager;
+module deepbook::balance_manager {
 
 use std::type_name::{Self, TypeName};
 use sui::bag::{Self, Bag};
@@ -298,4 +298,5 @@ fun validate_trader(balance_manager: &BalanceManager, trade_cap: &TradeCap) {
         balance_manager.allow_listed.contains(object::borrow_id(trade_cap)),
         EInvalidTrader,
     );
+}
 }

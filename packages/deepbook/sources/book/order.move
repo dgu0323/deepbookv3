@@ -3,7 +3,7 @@
 
 /// Order module defines the order struct and its methods.
 /// All order matching happens in this module.
-module deepbook::order;
+module deepbook::order{
 
 use deepbook::balances::{Self, Balances};
 use deepbook::constants;
@@ -296,4 +296,5 @@ public(package) fun is_bid(self: &Order): bool {
     let (is_bid, _, _) = utils::decode_order_id(self.order_id);
 
     is_bid
+}
 }

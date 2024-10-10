@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 #[test_only]
-module deepbook::order_query_tests;
+module deepbook::order_query_tests{
 
 use deepbook::balance_manager_tests::{
     USDC,
@@ -164,4 +164,5 @@ fun test_place_orders_ok() {
 
     test_utils::destroy(pool);
     end(test);
+}
 }

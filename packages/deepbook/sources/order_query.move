@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 /// This module defines the OrderPage struct and its methods to iterate over orders in a pool.
-module deepbook::order_query;
+module deepbook::order_query{
 
 use deepbook::big_vector::slice_borrow;
 use deepbook::constants;
@@ -78,4 +78,5 @@ public fun orders(self: &OrderPage): &vector<Order> {
 
 public fun has_next_page(self: &OrderPage): bool {
     self.has_next_page
+}
 }

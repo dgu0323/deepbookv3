@@ -1,7 +1,7 @@
 // Copyright (c) Mysten Labs, Inc.
 // SPDX-License-Identifier: Apache-2.0
 
-module deepbook::math;
+module deepbook::math {
 
 /// scaling setting for float
 const FLOAT_SCALING: u64 = 1_000_000_000;
@@ -200,4 +200,5 @@ fun test_sqrt() {
     assert!(sqrt(100_000_000 * scaling, precision_9) == 316_227_766_016, 0);
     assert!(sqrt(300_000_000 * scaling, precision_9) == 547_722_557_505, 0);
     assert!(sqrt(100_000_000_000, precision_9) == 10_000_000_000, 0);
+}
 }

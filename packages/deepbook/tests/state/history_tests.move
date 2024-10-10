@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 #[test_only]
-module deepbook::history_tests;
+module deepbook::history_tests{
 
 use deepbook::balances;
 use deepbook::constants;
@@ -229,4 +229,5 @@ fun test_rebate_edge_epoch_ok() {
 
     test_utils::destroy(history);
     end(test);
+}
 }

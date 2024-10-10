@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 /// Public-facing interface for the package.
-module deepbook::pool;
+module deepbook::pool {
 
 use deepbook::account::Account;
 use deepbook::balance_manager::{Self, BalanceManager, TradeProof};
@@ -1092,4 +1092,5 @@ fun place_order_int<BaseAsset, QuoteAsset>(
     order_info.emit_orders_filled(clock.timestamp_ms());
 
     order_info
+}
 }

@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 /// Account module manages the account data for each user.
-module deepbook::account;
+module deepbook::account {
 
 use deepbook::balances::{Self, Balances};
 use deepbook::fill::Fill;
@@ -196,4 +196,5 @@ public fun settled_balances(self: &Account): Balances {
 #[test_only]
 public fun owed_balances(self: &Account): Balances {
     self.owed_balances
+}
 }

@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 #[test_only]
-module deepbook::pool_tests;
+module deepbook::pool_tests{
 
 use deepbook::balance_manager::{BalanceManager, TradeCap};
 use deepbook::balance_manager_tests::{
@@ -4703,4 +4703,5 @@ fun test_cancel_orders(is_bid: bool) {
     );
 
     end(test);
+}
 }

@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 /// Deepbook utility functions.
-module deepbook::utils;
+module deepbook::utils {
 
 /// Pop elements from the back of `v` until its length equals `n`,
 /// returning the elements that were popped in the order they
@@ -98,4 +98,5 @@ fun test_encode_decode_order_id() {
     assert!(decoded_is_bid == is_bid, 0);
     assert!(decoded_price == price, 0);
     assert!(decoded_order_id == order_id, 0);
+}
 }

@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 #[test_only]
-module deepbook::order_info_tests;
+module deepbook::order_info_tests{
 
 use deepbook::balances;
 use deepbook::constants;
@@ -817,4 +817,5 @@ public fun create_order_info(
     };
 
     order_info
+}
 }

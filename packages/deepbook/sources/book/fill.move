@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 /// `Fill` struct represents the results of a match between two orders.
-module deepbook::fill;
+module deepbook::fill{
 
 use deepbook::balances::{Self, Balances};
 use deepbook::deep_price::OrderDeepPrice;
@@ -148,4 +148,5 @@ public(package) fun set_fill_maker_fee(self: &mut Fill, fee: u64) {
 
 public(package) fun set_fill_taker_fee(self: &mut Fill, fee: u64) {
     self.taker_fee = fee;
+}
 }

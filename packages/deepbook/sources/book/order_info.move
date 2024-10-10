@@ -3,7 +3,7 @@
 
 /// Order module defines the order struct and its methods.
 /// All order matching happens in this module.
-module deepbook::order_info;
+module deepbook::order_info {
 
 use deepbook::balances::{Self, Balances};
 use deepbook::constants;
@@ -541,4 +541,5 @@ fun order_filled_from_fill(
         taker_balance_manager_id: self.balance_manager_id,
         timestamp,
     }
+}
 }

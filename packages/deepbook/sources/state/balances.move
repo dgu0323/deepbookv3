@@ -3,7 +3,7 @@
 
 /// `Balances` represents the three assets make up a pool: base, quote, and deep.
 /// Whenever funds are moved, they are moved in the form of `Balances`.
-module deepbook::balances;
+module deepbook::balances{
 
 // === Structs ===
 public struct Balances has store, copy, drop {
@@ -58,4 +58,5 @@ public(package) fun quote(balances: &Balances): u64 {
 
 public(package) fun deep(balances: &Balances): u64 {
     balances.deep
+}
 }

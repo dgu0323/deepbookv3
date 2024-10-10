@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 #[test_only]
-module deepbook::balance_manager_tests;
+module deepbook::balance_manager_tests{
 
 use deepbook::balance_manager::{Self, BalanceManager, TradeCap};
 use sui::coin::mint_for_testing;
@@ -261,4 +261,5 @@ public(package) fun create_acct_and_share_with_funds(
 
         id
     }
+}
 }

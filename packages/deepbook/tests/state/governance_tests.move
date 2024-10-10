@@ -1,5 +1,5 @@
 #[test_only]
-module deepbook::governance_tests;
+module deepbook::governance_tests{
 
 use deepbook::constants;
 use deepbook::governance;
@@ -617,4 +617,5 @@ fun adjust_voting_power_over_threshold_ok() {
 
     destroy(gov);
     end(test);
+}
 }

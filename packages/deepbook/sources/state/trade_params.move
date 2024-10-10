@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 /// TradeParams module contains the trade parameters for a trading pair.
-module deepbook::trade_params;
+module deepbook::trade_params{
 
 // === Structs ===
 public struct TradeParams has store, drop, copy {
@@ -47,4 +47,5 @@ public(package) fun taker_fee_for_user(
 
 public(package) fun stake_required(trade_params: &TradeParams): u64 {
     trade_params.stake_required
+}
 }

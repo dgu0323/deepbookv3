@@ -4,7 +4,7 @@
 /// State module represents the current state of the pool. It maintains all
 /// the accounts, history, and governance information. It also processes all
 /// the transactions and updates the state accordingly.
-module deepbook::state;
+module deepbook::state{
 
 use deepbook::account::{Self, Account};
 use deepbook::balances::{Self, Balances};
@@ -435,4 +435,5 @@ fun update_account(self: &mut State, balance_manager_id: ID, ctx: &TxContext) {
             .calculate_rebate_amount(prev_epoch, maker_volume, active_stake);
         account.add_rebates(rebates);
     }
+}
 }
