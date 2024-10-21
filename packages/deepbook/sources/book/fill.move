@@ -23,6 +23,8 @@ public struct Fill has store, drop, copy {
     expired: bool,
     // Whether the maker order is fully filled
     completed: bool,
+    // Original maker quantity
+    original_maker_quantity: u64,
     // Quantity filled
     base_quantity: u64,
     // Quantity of quote currency filled
@@ -35,8 +37,12 @@ public struct Fill has store, drop, copy {
     maker_deep_price: OrderDeepPrice,
     // Taker fee paid for fill
     taker_fee: u64,
+    // Whether taker_fee is DEEP
+    taker_fee_is_deep: bool,
     // Maker fee paid for fill
     maker_fee: u64,
+    // Whether maker_fee is DEEP
+    maker_fee_is_deep: bool,
 }
 
 // === Public-View Functions ===
@@ -64,6 +70,10 @@ public fun completed(self: &Fill): bool {
     self.completed
 }
 
+public fun original_maker_quantity(self: &Fill): u64 {
+    self.original_maker_quantity
+}
+
 public fun base_quantity(self: &Fill): u64 {
     self.base_quantity
 }
@@ -88,8 +98,16 @@ public fun taker_fee(self: &Fill): u64 {
     self.taker_fee
 }
 
+public fun taker_fee_is_deep(self: &Fill): bool {
+    self.taker_fee_is_deep
+}
+
 public fun maker_fee(self: &Fill): u64 {
     self.maker_fee
+}
+
+public fun maker_fee_is_deep(self: &Fill): bool {
+    self.maker_fee_is_deep
 }
 
 // === Public-Package Functions ===
@@ -100,11 +118,14 @@ public(package) fun new(
     balance_manager_id: ID,
     expired: bool,
     completed: bool,
+    original_maker_quantity: u64,
     base_quantity: u64,
     quote_quantity: u64,
     taker_is_bid: bool,
     maker_epoch: u64,
     maker_deep_price: OrderDeepPrice,
+    taker_fee_is_deep: bool,
+    maker_fee_is_deep: bool,
 ): Fill {
     Fill {
         maker_order_id,
@@ -113,13 +134,16 @@ public(package) fun new(
         balance_manager_id,
         expired,
         completed,
+        original_maker_quantity,
         base_quantity,
         quote_quantity,
         taker_is_bid,
         maker_epoch,
         maker_deep_price,
         taker_fee: 0,
+        taker_fee_is_deep,
         maker_fee: 0,
+        maker_fee_is_deep,
     }
 }
 

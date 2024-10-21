@@ -76,6 +76,8 @@ public struct OrderInfo has store, drop, copy {
     fill_limit_reached: bool,
     // Whether order is inserted
     order_inserted: bool,
+    // Order Timestamp
+    timestamp: u64,
 }
 
 /// Emitted when a maker order is filled.
@@ -88,7 +90,9 @@ public struct OrderFilled has copy, store, drop {
     price: u64,
     taker_is_bid: bool,
     taker_fee: u64,
+    taker_fee_is_deep: bool,
     maker_fee: u64,
+    maker_fee_is_deep: bool,
     base_quantity: u64,
     quote_quantity: u64,
     maker_balance_manager_id: ID,
@@ -107,6 +111,21 @@ public struct OrderPlaced has copy, store, drop {
     is_bid: bool,
     placed_quantity: u64,
     expire_timestamp: u64,
+    timestamp: u64,
+}
+
+/// Emitted when a maker order is expired.
+public struct OrderExpired has copy, store, drop {
+    balance_manager_id: ID,
+    pool_id: ID,
+    order_id: u128,
+    client_order_id: u64,
+    trader: address, // trader that expired the order
+    price: u64,
+    is_bid: bool,
+    original_quantity: u64,
+    base_asset_quantity_canceled: u64,
+    timestamp: u64,
 }
 
 // === Public-View Functions ===
@@ -214,6 +233,7 @@ public(package) fun new(
     expire_timestamp: u64,
     order_deep_price: OrderDeepPrice,
     market_order: bool,
+    timestamp: u64,
 ): OrderInfo {
     OrderInfo {
         pool_id,
@@ -239,6 +259,7 @@ public(package) fun new(
         market_order,
         fill_limit_reached: false,
         order_inserted: false,
+        timestamp,
     }
 }
 
@@ -351,7 +372,8 @@ public(package) fun to_order(self: &OrderInfo): Order {
         self.order_id,
         self.balance_manager_id,
         self.client_order_id,
-        self.remaining_quantity(),
+        self.original_quantity,
+        self.executed_quantity,
         self.fee_is_deep,
         self.order_deep_price,
         self.epoch,
@@ -466,6 +488,7 @@ public(package) fun match_maker(
         self.remaining_quantity(),
         self.is_bid,
         expire_maker,
+        self.fee_is_deep,
     );
     self.fills.push_back(fill);
     if (fill.expired()) return true;
@@ -488,6 +511,13 @@ public(package) fun emit_orders_filled(self: &OrderInfo, timestamp: u64) {
         let fill = &self.fills[i];
         if (!fill.expired()) {
             event::emit(self.order_filled_from_fill(fill, timestamp));
+        } else {
+            let cancel_maker = self.balance_manager_id() == fill.balance_manager_id();
+            if (cancel_maker) {
+                self.emit_order_canceled_maker_from_fill(fill, timestamp);
+            } else {
+                event::emit(self.order_expired_from_fill(fill, timestamp));
+            };
         };
         i = i + 1;
     };
@@ -504,6 +534,7 @@ public(package) fun emit_order_placed(self: &OrderInfo) {
         placed_quantity: self.remaining_quantity(),
         price: self.price,
         expire_timestamp: self.expire_timestamp,
+        timestamp: self.timestamp,
     });
 }
 
@@ -534,7 +565,9 @@ fun order_filled_from_fill(
         price: fill.execution_price(),
         taker_is_bid: self.is_bid,
         taker_fee: fill.taker_fee(),
+        taker_fee_is_deep: fill.taker_fee_is_deep(),
         maker_fee: fill.maker_fee(),
+        maker_fee_is_deep: fill.maker_fee_is_deep(),
         base_quantity: fill.base_quantity(),
         quote_quantity: fill.quote_quantity(),
         maker_balance_manager_id: fill.balance_manager_id(),
@@ -542,4 +575,41 @@ fun order_filled_from_fill(
         timestamp,
     }
 }
+
+fun order_expired_from_fill(
+    self: &OrderInfo,
+    fill: &Fill,
+    timestamp: u64,
+): OrderExpired {
+    OrderExpired {
+        balance_manager_id: fill.balance_manager_id(),
+        pool_id: self.pool_id,
+        order_id: fill.maker_order_id(),
+        client_order_id: fill.maker_client_order_id(),
+        trader: self.trader(),
+        price: fill.execution_price(),
+        is_bid: !self.is_bid(),
+        original_quantity: fill.original_maker_quantity(),
+        base_asset_quantity_canceled: fill.base_quantity(),
+        timestamp
+    }
+}
+
+fun emit_order_canceled_maker_from_fill(
+    self: &OrderInfo,
+    fill: &Fill,
+    timestamp: u64,
+) {
+    order::emit_cancel_maker(
+        fill.balance_manager_id(),
+        self.pool_id,
+        fill.maker_order_id(),
+        fill.maker_client_order_id(),
+        self.trader(),
+        fill.execution_price(),
+        !self.is_bid(),
+        fill.original_maker_quantity(),
+        fill.base_quantity(),
+        timestamp
+    )
 }

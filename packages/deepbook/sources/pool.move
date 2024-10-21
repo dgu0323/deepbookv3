@@ -36,17 +36,16 @@ const EInvalidTickSize: u64 = 3;
 const EInvalidLotSize: u64 = 4;
 const EInvalidMinSize: u64 = 5;
 const EInvalidQuantityIn: u64 = 6;
-const EIneligibleWhitelist: u64 = 7;
-const EIneligibleReferencePool: u64 = 8;
-const EFeeTypeNotSupported: u64 = 9;
-const EInvalidOrderBalanceManager: u64 = 10;
-const EIneligibleTargetPool: u64 = 11;
-const ENoAmountToBurn: u64 = 12;
-const EPackageVersionDisabled: u64 = 13;
-const EMinimumQuantityOutNotMet: u64 = 14;
-const EInvalidStake: u64 = 15;
-const EPoolNotRegistered: u64 = 16;
-const EPoolCannotBeBothWhitelistedAndStable: u64 = 17;
+const EIneligibleReferencePool: u64 = 7;
+const EFeeTypeNotSupported: u64 = 8;
+const EInvalidOrderBalanceManager: u64 = 9;
+const EIneligibleTargetPool: u64 = 10;
+const ENoAmountToBurn: u64 = 11;
+const EPackageVersionDisabled: u64 = 12;
+const EMinimumQuantityOutNotMet: u64 = 13;
+const EInvalidStake: u64 = 14;
+const EPoolNotRegistered: u64 = 15;
+const EPoolCannotBeBothWhitelistedAndStable: u64 = 16;
 
 // === Structs ===
 public struct Pool<phantom BaseAsset, phantom QuoteAsset> has key {
@@ -262,6 +261,8 @@ public fun modify_order<BaseAsset, QuoteAsset>(
     clock: &Clock,
     ctx: &TxContext,
 ) {
+    let previous_quantity = self.get_order(order_id).quantity();
+
     let self = self.load_inner_mut();
     let (cancel_quantity, order) = self
         .book
@@ -279,6 +280,7 @@ public fun modify_order<BaseAsset, QuoteAsset>(
 
     order.emit_order_modified(
         self.pool_id,
+        previous_quantity,
         ctx.sender(),
         clock.timestamp_ms(),
     );
@@ -883,6 +885,34 @@ public fun get_order_deep_required<BaseAsset, QuoteAsset>(
     (math::mul(taker_fee, deep_quantity), math::mul(maker_fee, deep_quantity))
 }
 
+/// Returns the locked balance for the balance_manager in the pool
+/// Returns (base_quantity, quote_quantity, deep_quantity)
+public fun locked_balance<BaseAsset, QuoteAsset>(
+    self: &Pool<BaseAsset, QuoteAsset>,
+    balance_manager: &BalanceManager,
+): (u64, u64, u64) {
+    let account_orders = self.get_account_order_details(balance_manager);
+    let self = self.load_inner();
+    let mut base_quantity = 0;
+    let mut quote_quantity = 0;
+    let mut deep_quantity = 0;
+
+    account_orders.do_ref!(|order| {
+        let maker_fee = self.state.history().historic_maker_fee(order.epoch());
+        let (base, quote, deep) = order.locked_balance(maker_fee);
+        base_quantity = base_quantity + base;
+        quote_quantity = quote_quantity + quote;
+        deep_quantity = deep_quantity + deep;
+    });
+
+    let settled_balances = self.state.account(balance_manager.id()).settled_balances();
+    base_quantity = base_quantity + settled_balances.base();
+    quote_quantity = quote_quantity + settled_balances.quote();
+    deep_quantity = deep_quantity + settled_balances.deep();
+
+    (base_quantity, quote_quantity, deep_quantity)
+}
+
 /// Returns the trade params for the pool.
 public fun pool_trade_params<BaseAsset, QuoteAsset>(
     self: &Pool<BaseAsset, QuoteAsset>,
@@ -1034,11 +1064,6 @@ fun set_whitelist<BaseAsset, QuoteAsset>(
     self: &mut PoolInner<BaseAsset, QuoteAsset>,
     ctx: &TxContext,
 ) {
-    let base = type_name::get<BaseAsset>();
-    let quote = type_name::get<QuoteAsset>();
-    let deep_type = type_name::get<DEEP>();
-    assert!(base == deep_type || quote == deep_type, EIneligibleWhitelist);
-
     self.state.governance_mut(ctx).set_whitelist(true);
 }
 
@@ -1077,6 +1102,7 @@ fun place_order_int<BaseAsset, QuoteAsset>(
         expire_timestamp,
         self.deep_price.get_order_deep_price(whitelist),
         market_order,
+        clock.timestamp_ms(),
     );
     self.book.create_order(&mut order_info, clock.timestamp_ms());
     let (settled, owed) = self

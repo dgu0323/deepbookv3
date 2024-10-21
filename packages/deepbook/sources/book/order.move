@@ -55,6 +55,8 @@ public struct OrderModified has copy, store, drop {
     trader: address,
     price: u64,
     is_bid: bool,
+    previous_quantity: u64,
+    filled_quantity: u64,
     new_quantity: u64,
     timestamp: u64,
 }
@@ -113,6 +115,7 @@ public(package) fun new(
     balance_manager_id: ID,
     client_order_id: u64,
     quantity: u64,
+    filled_quantity: u64,
     fee_is_deep: bool,
     order_deep_price: OrderDeepPrice,
     epoch: u64,
@@ -124,7 +127,7 @@ public(package) fun new(
         balance_manager_id,
         client_order_id,
         quantity,
-        filled_quantity: 0,
+        filled_quantity,
         fee_is_deep,
         order_deep_price,
         epoch,
@@ -141,6 +144,7 @@ public(package) fun generate_fill(
     quantity: u64,
     is_bid: bool,
     expire_maker: bool,
+    taker_fee_is_deep: bool,
 ): Fill {
     let remaining_quantity = self.quantity - self.filled_quantity;
     let mut base_quantity = remaining_quantity.min(quantity);
@@ -168,11 +172,14 @@ public(package) fun generate_fill(
         balance_manager_id,
         expired,
         self.quantity == self.filled_quantity,
+        self.quantity,
         base_quantity,
         quote_quantity,
         is_bid,
         self.epoch,
         self.order_deep_price,
+        taker_fee_is_deep,
+        self.fee_is_deep,
     )
 }
 
@@ -227,6 +234,34 @@ public(package) fun calculate_cancel_refund(
     balances::new(base_out, quote_out, deep_out)
 }
 
+public(package) fun locked_balance(
+    self: &Order,
+    maker_fee: u64,
+): (u64, u64, u64) {
+    let (is_bid, order_price, _) = utils::decode_order_id(self.order_id());
+    let mut base_quantity = 0;
+    let mut quote_quantity = 0;
+    let remaining_base_quantity = self.quantity() - self.filled_quantity();
+    let remaining_quote_quantity = math::mul(remaining_base_quantity, order_price);
+
+    if (is_bid) {
+        quote_quantity = quote_quantity + remaining_quote_quantity;
+    } else {
+        base_quantity = base_quantity + remaining_base_quantity;
+    };
+    let deep_quantity = math::mul(
+        maker_fee,
+        self
+            .order_deep_price()
+            .deep_quantity(
+                remaining_base_quantity,
+                remaining_quote_quantity,
+            ),
+    );
+
+    (base_quantity, quote_quantity, deep_quantity)
+}
+
 public(package) fun emit_order_canceled(
     self: &Order,
     pool_id: ID,
@@ -253,6 +288,7 @@ public(package) fun emit_order_canceled(
 public(package) fun emit_order_modified(
     self: &Order,
     pool_id: ID,
+    previous_quantity: u64,
     trader: address,
     timestamp: u64,
 ) {
@@ -266,7 +302,35 @@ public(package) fun emit_order_modified(
         trader,
         price,
         is_bid,
+        previous_quantity,
+        filled_quantity: self.filled_quantity,
         new_quantity: self.quantity,
+        timestamp,
+    });
+}
+
+public(package) fun emit_cancel_maker(
+    balance_manager_id: ID,
+    pool_id: ID,
+    order_id: u128,
+    client_order_id: u64,
+    trader: address,
+    price: u64,
+    is_bid: bool,
+    original_quantity: u64,
+    base_asset_quantity_canceled: u64,
+    timestamp: u64,
+) {
+    event::emit(OrderCanceled {
+        balance_manager_id,
+        pool_id,
+        order_id,
+        client_order_id,
+        trader,
+        price,
+        is_bid,
+        original_quantity,
+        base_asset_quantity_canceled,
         timestamp,
     });
 }

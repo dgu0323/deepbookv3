@@ -50,10 +50,13 @@ fun process_maker_fill_ok() {
         false,
         false,
         100,
+        100,
         500,
         false,
         0,
         deep_price::new_order_deep_price(true, constants::deep_multiplier()),
+        true,
+        true
     );
     account.process_maker_fill(&fill);
     let (settled, owed) = account.settle();
@@ -72,10 +75,13 @@ fun process_maker_fill_ok() {
         false,
         true,
         100,
+        100,
         500,
         true,
         0,
         deep_price::new_order_deep_price(true, constants::deep_multiplier()),
+        true,
+        true
     );
     account.process_maker_fill(&fill);
     let (settled, owed) = account.settle();
@@ -95,10 +101,13 @@ fun process_maker_fill_ok() {
         true,
         false,
         100,
+        100,
         500,
         true,
         0,
         deep_price::new_order_deep_price(true, constants::deep_multiplier()),
+        true,
+        true
     );
     account.process_maker_fill(&fill);
     let (settled, owed) = account.settle();
@@ -119,10 +128,13 @@ fun process_maker_fill_ok() {
         false,
         true,
         100,
+        100,
         500,
         true,
         0,
         deep_price::new_order_deep_price(true, constants::deep_multiplier()),
+        true,
+        true
     );
     account.process_maker_fill(&fill);
     let (settled, owed) = account.settle();
@@ -202,10 +214,13 @@ fun update_ok() {
         false,
         false,
         100,
+        100,
         500,
         false,
         0,
         deep_price::new_order_deep_price(true, constants::deep_multiplier()),
+        true,
+        true
     );
     account.process_maker_fill(&fill);
 
