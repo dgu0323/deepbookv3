@@ -110,8 +110,10 @@ public(package) fun create_order(
     order_info.emit_order_placed();
 }
 
-/// Given base_quantity and quote_quantity, calculate the base_quantity_out and quote_quantity_out.
-/// Will return (base_quantity_out, quote_quantity_out, deep_quantity_required) if base_amount > 0 or quote_amount > 0.
+/// Given base_quantity and quote_quantity, calculate the base_quantity_out and
+/// quote_quantity_out.
+/// Will return (base_quantity_out, quote_quantity_out, deep_quantity_required)
+/// if base_amount > 0 or quote_amount > 0.
 public(package) fun get_quantity_out(
     self: &Book,
     base_quantity: u64,
@@ -317,6 +319,7 @@ public(package) fun get_level2_range_and_ticks(
                 cur_price = order_price;
                 cur_quantity = 0;
                 ticks_left = ticks_left - 1;
+                if (ticks_left == 0) break;
             };
             if (cur_price != 0) {
                 cur_quantity =
@@ -329,7 +332,7 @@ public(package) fun get_level2_range_and_ticks(
             else book_side.next_slice(ref, offset);
     };
 
-    if (cur_price != 0) {
+    if (cur_price != 0 && ticks_left > 0) {
         price_vec.push_back(cur_price);
         quantity_vec.push_back(cur_quantity);
     };
@@ -341,6 +344,18 @@ public(package) fun get_order(self: &Book, order_id: u128): Order {
     let order = self.book_side(order_id).borrow(order_id);
 
     order.copy_order()
+}
+
+public(package) fun set_tick_size(self: &mut Book, new_tick_size: u64) {
+    self.tick_size = new_tick_size;
+}
+
+public(package) fun set_lot_size(self: &mut Book, new_lot_size: u64) {
+    self.lot_size = new_lot_size;
+}
+
+public(package) fun set_min_size(self: &mut Book, new_min_size: u64) {
+    self.min_size = new_min_size;
 }
 
 // === Private Functions ===

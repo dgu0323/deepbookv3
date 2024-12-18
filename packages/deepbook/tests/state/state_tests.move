@@ -1,4 +1,8 @@
-module deepbook::state_tests{
+// Copyright (c) Mysten Labs, Inc.
+// SPDX-License-Identifier: Apache-2.0
+
+#[test_only]
+module deepbook::state_tests;
 
 use deepbook::balances;
 use deepbook::constants;

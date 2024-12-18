@@ -58,6 +58,7 @@ module deepbook::master_tests {
     const EIncorrectLevel2Quantity: u64 = 18;
     const EInvalidStake: u64 = 19;
     const EAddPricePointUnregisteredPool: u64 = 20;
+    const EIncorrectLevel2Length: u64 = 21;
 
     #[test]
     fun test_master_ok() {
@@ -253,6 +254,8 @@ module deepbook::master_tests {
 
         // Epoch 0
         assert!(test.ctx().epoch() == 0, 0);
+
+        check_locked_balance<SUI, USDC>(ALICE, pool1_id, alice_balance_manager_id, &alice_locked_balance, &mut test);
 
         // Alice places an order in pool 1
         pool_tests::place_limit_order<SUI, USDC>(
@@ -450,6 +453,13 @@ module deepbook::master_tests {
                 &mut test,
             );
         };
+
+        withdraw_settled_amounts<SUI, USDC>(
+            ALICE,
+            pool1_id,
+            alice_balance_manager_id,
+            &mut test
+        );
 
         // Alice places bid order in pool 1
         let order_info_1 = pool_tests::place_limit_order<SUI, USDC>(
@@ -2158,6 +2168,10 @@ module deepbook::master_tests {
         assert!(bid_quantities[0] == 5 * constants::float_scaling(), EIncorrectLevel2Quantity);
         assert!(ask_prices[0] == 170 * constants::float_scaling(), EIncorrectLevel2Price);
         assert!(ask_quantities[0] == 5 * constants::float_scaling(), EIncorrectLevel2Quantity);
+        assert!(bid_prices.length() == 1, EIncorrectLevel2Length);
+        assert!(ask_prices.length() == 1, EIncorrectLevel2Length);
+        assert!(bid_quantities.length() == 1, EIncorrectLevel2Length);
+        assert!(ask_quantities.length() == 1, EIncorrectLevel2Length);
 
         // Both bids and asks (2 each) should be returned
         let (bid_prices, bid_quantities, ask_prices, ask_quantities) = get_level2_ticks_from_mid<SUI, DEEP>(
@@ -2174,6 +2188,10 @@ module deepbook::master_tests {
         assert!(ask_quantities[0] == 5 * constants::float_scaling(), EIncorrectLevel2Quantity);
         assert!(ask_prices[1] == 180 * constants::float_scaling(), EIncorrectLevel2Price);
         assert!(ask_quantities[1] == 3 * constants::float_scaling(), EIncorrectLevel2Quantity);
+        assert!(bid_prices.length() == 2, EIncorrectLevel2Length);
+        assert!(ask_prices.length() == 2, EIncorrectLevel2Length);
+        assert!(bid_quantities.length() == 2, EIncorrectLevel2Length);
+        assert!(ask_quantities.length() == 2, EIncorrectLevel2Length);
 
         // Should only return 2 bids and 2 asks even though tick is higher
         let (bid_prices, bid_quantities, ask_prices, ask_quantities) = get_level2_ticks_from_mid<SUI, DEEP>(
@@ -2190,6 +2208,10 @@ module deepbook::master_tests {
         assert!(ask_quantities[0] == 5 * constants::float_scaling(), EIncorrectLevel2Quantity);
         assert!(ask_prices[1] == 180 * constants::float_scaling(), EIncorrectLevel2Price);
         assert!(ask_quantities[1] == 3 * constants::float_scaling(), EIncorrectLevel2Quantity);
+        assert!(bid_prices.length() == 2, EIncorrectLevel2Length);
+        assert!(ask_prices.length() == 2, EIncorrectLevel2Length);
+        assert!(bid_quantities.length() == 2, EIncorrectLevel2Length);
+        assert!(ask_quantities.length() == 2, EIncorrectLevel2Length);
 
         end(test);
     }
